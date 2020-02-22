@@ -54,9 +54,7 @@ public class BuyerProductController {
                 .collect(Collectors.toList());*/
 
         List<ProductCategory> productCategoryList = categoryService.findByCategoryTypeIn(categoryTypeList);
-
         //3数据拼装
-
         List<ProductVO> productVOList = new ArrayList<>();
         for (ProductCategory productCategory : productCategoryList) {
             ProductVO productVO = new ProductVO();

@@ -1,6 +1,7 @@
 package com.itcast.service.impl;
 
 import com.itcast.dataobject.ProductInfo;
+import com.itcast.dto.CartDTO;
 import com.itcast.enums.ProudctStatusEnum;
 import com.itcast.enums.ResultEnum;
 import com.itcast.exception.SellException;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -48,10 +50,46 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void delete(String productId) {
         ProductInfo productInfo = repository.findOne(productId);
-        if (productInfo == null){
+        if (productInfo == null) {
             throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
         }
         repository.delete(productId);
 
     }
+
+    @Override
+    @Transactional
+    public void increaseStock(List<CartDTO> cartDTOList) {
+
+    }
+
+    @Override
+    @Transactional
+
+    public void decreaseStock(List<CartDTO> cartDTOList) {
+        for (CartDTO cartDTO : cartDTOList) {
+            ProductInfo productInfo = repository.findOne(cartDTO.getProductId());
+            if (productInfo == null) {
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+            }
+            Integer result = productInfo.getProductStock() - cartDTO.getProductQuantity();
+            if (result < 0) {
+                throw new SellException(ResultEnum.PRODUCT_STOCK_ERROR);
+            }
+            productInfo.setProductStock(result);
+            repository.save(productInfo);
+
+        }
+
+    }
+    @Override
+    public ProductInfo onSale(String productId) {
+        return null;
+    }
+
+    @Override
+    public ProductInfo offSale(String productId) {
+        return null;
+    }
+
 }
